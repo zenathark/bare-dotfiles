@@ -38,10 +38,18 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
 vim.keymap.set("n", "<leader>vpp", "<cmd>e ~/.dotfiles/nvim/.config/nvim/lua/theprimeagen/packer.lua<CR>")
 
-vim.keymap.set("n", "<leader>h", ":ClangdSwitchSourceHeader<CR>")
 
 vim.keymap.set("n", "<leader><leader>", function()
     vim.cmd("so")
 end)
+
+vim.keymap.set("n", "<C-j>", "<C-w>j")
+vim.keymap.set("n", "<C-k>", "<C-w>k")
+vim.keymap.set("n", "<C-h>", "<C-w>h")
+vim.keymap.set("n", "<C-j>", "<C-w>j")
+vim.keymap.set("n", "<C-l>", "<C-w>l")
+
+vim.keymap.set("n", "<leader>d", ":bprev<CR>")
+vim.keymap.set("n", "<leader>-", ":bnext<CR>")
 
 vim.keymap.set("n", "wb", "<cmd>ls<CR>")
