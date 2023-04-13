@@ -40,7 +40,7 @@ vim.keymap.set("n", "<leader>vpp", "<cmd>e ~/.dotfiles/nvim/.config/nvim/lua/the
 
 
 vim.keymap.set("n", "<leader><leader>", function()
-    vim.cmd("so")
+  vim.cmd("so")
 end)
 
 vim.keymap.set("n", "<C-j>", "<C-w>j")
@@ -51,5 +51,3 @@ vim.keymap.set("n", "<C-l>", "<C-w>l")
 
 vim.keymap.set("n", "<leader>d", ":bprev<CR>")
 vim.keymap.set("n", "<leader>-", ":bnext<CR>")
-
-vim.keymap.set("n", "wb", "<cmd>ls<CR>")
