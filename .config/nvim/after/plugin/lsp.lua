@@ -1,100 +1,185 @@
-local lsp = require('lsp-zero').preset({})
+local lspconfig = require("lspconfig")
+local luasnip = require("luasnip")
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-lsp.ensure_installed({
-  'tsserver',
-  'eslint',
-  'lua_ls',
-  'rust_analyzer',
-  'clangd',
-})
-
-local cmp = require('cmp')
-local cmp_select = { behavior = cmp.SelectBehavior.Select }
-local cmp_mapping = lsp.defaults.cmp_mappings({
-  ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-  ['<C-Space>'] = cmp.mapping.complete(),
-})
-
-cmp.setup({
-  select = {
-    behavior = cmp.SelectBehavior.Select,
-  },
-  mappings = {
-    ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-    ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-    ['<C-Space>'] = cmp.mapping.complete(),
-  }
-})
+local cmp = require("cmp")
+vim.opt.completeopt = {}
+vim.opt.cmdheight = 1
+vim.opt.fileencoding = "utf-8"
 
 local diagnostics = {
-  BoldError = "",
-  Error = "",
-  BoldWarning = "",
-  Warning = "",
-  BoldInformation = "",
-  Information = "",
-  BoldQuestion = "",
-  Question = "",
-  BoldHint = "",
-  Hint = "",
-  Debug = "",
-  Trace = "✎",
+	BoldError = "",
+	Error = "",
+	BoldWarning = "",
+	Warning = "",
+	BoldInformation = "",
+	Information = "",
+	BoldQuestion = "",
+	Question = "",
+	BoldHint = "",
+	Hint = "",
+	Debug = "",
+	Trace = "✎",
 }
 
-lsp.set_sign_icons({
-  error = diagnostics.Error,
-  warn = diagnostics.Warning,
-  hint = diagnostics.Hint,
-  info = diagnostics.Information,
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+	callback = function(env)
+		local opts = { buffer = true }
+		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+		vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+		vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+		vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+		vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+		vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
+		vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, opts)
+		vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, opts)
+		vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, opts)
+		vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+		vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+		vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+		vim.keymap.set("n", "<leader>k", vim.lsp.buf.signature_help, opts)
+		vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, opts)
+		vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+		vim.keymap.set("n", "<leader>h", ":ClangdSwitchSourceHeader<CR>")
+	end,
 })
 
-lsp.on_attach(function(client, bufnr)
-  local opts = { buffer = bfnr, remap = false }
-  vim.keymap.set("n", "gD", function() vim.lsp.buf.declaration() end, opts)
-  vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
-  vim.keymap.set("n", "gi", function() vim.lsp.buf.implementation() end, opts)
-  vim.keymap.set("n", "gr", function() vim.lsp.buf.references() end, opts)
-  vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-  vim.keymap.set("n", "<space>wa", function() vim.lsp.buf.add_workspace_folder() end, opts)
-  vim.keymap.set("n", "<space>wr", function() vim.lsp.buf.remove_workspace_folder() end, opts)
-  vim.keymap.set("n", "<space>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folder())) end, opts)
-  vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
-  vim.keymap.set("n", "<leader>vd", function() vim.lsp.buf.open_float() end, opts)
-  vim.keymap.set("n", "[d", function() vim.lsp.buf.goto_next() end, opts)
-  vim.keymap.set("n", "]d", function() vim.lsp.buf.goto_prev() end, opts)
-  vim.keymap.set("n", "<leader>ca", function() vim.lsp.buf.code_action() end, opts)
-  vim.keymap.set("n", "<leader>k", function() vim.lsp.buf.signature_help() end, opts)
-  vim.keymap.set("n", "<leader>D", function() vim.lsp.buf.type_definition() end, opts)
-  vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end, opts)
-  vim.keymap.set("n", "<leader>h", ":ClangdSwitchSourceHeader<CR>")
-end)
-
-lsp.format_on_save({
-  servers = {
-    ['lua_ls'] = { 'lua' },
-    ['rust_analyzer'] = { 'rust' },
-    ['clangd'] = { 'cpp' },
-    ['jedi-language-server'] = { 'python' },
-  }
+lspconfig.clangd.setup({
+	cmd = {
+		"clangd",
+		"--background-index",
+		"--suggest-missing-includes",
+		-- "--log=verbose"
+	},
+	on_attach = function(_, _)
+		vim.keymap.set("n", "<leader>h", ":ClangdSwitchSourceHeader<CR>")
+	end,
+	capabilities = capabilities,
 })
 
-lsp.setup()
+lspconfig.lua_ls.setup({
+	capabilities = capabilities,
+})
+cmp.setup({
+	-- active = true,
+	-- confirm_opts = {
+	--   behavior = cmp.ConfirmBehavior.Replace,
+	--   select = false,
+	-- },
+	snippet = {
+		expand = function(args)
+			luasnip.lsp_expand(args.body)
+		end,
+	},
+	mapping = cmp.mapping.preset.insert({
+		["<C-p>"] = cmp.mapping.select_prev_item(),
+		["<C-n>"] = cmp.mapping.select_next_item(),
+		["<C-y>"] = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
+		["<C-e>"] = cmp.mapping.abort(),
+		["<C-Space>"] = cmp.mapping.complete(),
+		["<C-u>"] = cmp.mapping.scroll_docs(-4),
+		["<C-d>"] = cmp.mapping.scroll_docs(4),
+		["<C-f>"] = cmp.mapping(function(fallback)
+			if luasnip.jumpable(1) then
+				luasnip.jump(1)
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
+		["<CR>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				local confirm_opts = {
+					behavior = cmp.ConfirmBehavior.Replace,
+					select = false,
+				}
+				local is_insert_mode = function()
+					return vim.api.nvim_get_mode().mode:sub(1, 1) == "i"
+				end
+				if is_insert_mode() then -- prevent overwriting brackets
+					confirm_opts.behavior = cmp.ConfirmBehavior.Insert
+				end
+				if cmp.confirm(confirm_opts) then
+					return -- success, exit early
+				end
+			end
+			fallback() -- if not exited early, always fallback
+		end),
+		["<C-b>"] = cmp.mapping(function(fallback)
+			if luasnip.jumpable(-1) then
+				luasnip.jump(-1)
+			else
+				fallback()
+			end
+		end, { "i", "s" }),
+	}),
+	sources = {
+		{ name = "path" },
+		{ name = "nvim_lsp" },
+		{ name = "luasnip" },
+		{ name = "bufer" },
+	},
+	formatting = {
+		fields = { "menu", "abbr", "kind" },
+		format = function(entry, item)
+			local menu_icon = {
+				nvim_lsp = "λ",
+				luasnip = "⋗",
+				buffer = "Ω",
+				path = "🖫",
+			}
 
+			item.menu = menu_icon[entry.source.name]
+			return item
+		end,
+	},
+})
+
+local sign = function(opts)
+	vim.fn.sign_define(opts.name, {
+		texthl = opts.name,
+		text = opts.text,
+		numhl = "",
+	})
+end
+
+sign({ name = "DiagnosticSignError", text = diagnostics.BoldError })
+sign({ name = "DiagnosticSignWarn", text = diagnostics.Warning })
+sign({ name = "DiagnosticSignHint", text = diagnostics.Hint })
+sign({ name = "DiagnosticSignInfo", text = diagnostics.Information })
+
+local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 local null_ls = require("null-ls")
 
 null_ls.setup({
-  sources = {
-    null_ls.builtins.completion.spell,
-  },
+	debug = true,
+	sources = {
+		null_ls.builtins.formatting.clang_format,
+		null_ls.builtins.formatting.stylua,
+	},
+	on_attach = function(client, bufnr)
+		if client.supports_method("textDocument/formatting") then
+			vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+			vim.api.nvim_create_autocmd("BufWritepre", {
+				group = augroup,
+				buffer = bufnr,
+				callback = function()
+					vim.lsp.buf.format({
+						bufnr = bufnr,
+						filter = function(aclient)
+							return aclient.name == "null-ls"
+						end,
+					})
+				end,
+			})
+		end
+	end,
 })
 
 -- See mason-null-ls.nvim's documentation for more details:
 -- https://github.com/jay-babu/mason-null-ls.nvim#setup
-require('mason-null-ls').setup({
-  ensure_installed = nil,
-  automatic_installation = true,
-  automatic_setup = false,
-})
+-- require('mason-null-ls').setup({
+--   ensure_installed = nil,
+--   automatic_installation = true,
+--   automatic_setup = false,
+-- })

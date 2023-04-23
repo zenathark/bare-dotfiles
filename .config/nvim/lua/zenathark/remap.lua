@@ -51,3 +51,6 @@ vim.keymap.set("n", "<C-l>", "<C-w>l")
 
 vim.keymap.set("n", "<leader>d", ":bprev<CR>")
 vim.keymap.set("n", "<leader>-", ":bnext<CR>")
+
+vim.keymap.set("n", "<C-s>", ":w<CR>")
+vim.keymap.set("i", "<C-s>", ":w<CR>")
