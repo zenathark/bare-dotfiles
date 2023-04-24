@@ -61,6 +61,11 @@ lspconfig.clangd.setup({
 lspconfig.lua_ls.setup({
 	capabilities = capabilities,
 })
+
+lspconfig.jedi_language_server.setup({
+	capabilities = capabilities,
+})
+
 cmp.setup({
 	-- active = true,
 	-- confirm_opts = {
@@ -154,8 +159,14 @@ local null_ls = require("null-ls")
 null_ls.setup({
 	debug = true,
 	sources = {
+		null_ls.builtins.code_actions.gitsigns,
 		null_ls.builtins.formatting.clang_format,
 		null_ls.builtins.formatting.stylua,
+		null_ls.builtins.formatting.black,
+		null_ls.builtins.formatting.cmake_format,
+		null_ls.builtins.completion.luasnip,
+		null_ls.builtins.diagnostics.cmake_lint,
+		null_ls.builtins.diagnostics.pylama,
 	},
 	on_attach = function(client, bufnr)
 		if client.supports_method("textDocument/formatting") then
