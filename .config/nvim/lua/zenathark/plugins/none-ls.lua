@@ -6,7 +6,6 @@ return {
       sources = {
         none_ls.builtins.code_actions.gitsigns,
         none_ls.builtins.code_actions.eslint_d,
-        none_ls.builtins.code_actions.ltrs,
         none_ls.builtins.formatting.clang_format,
         none_ls.builtins.formatting.stylua,
         none_ls.builtins.formatting.black,
@@ -22,7 +21,7 @@ return {
         none_ls.builtins.diagnostics.clang_check,
         none_ls.builtins.diagnostics.cppcheck,
         none_ls.builtins.diagnostics.cpplint,
-        none_ls.builtins.diagnostics.ltrs,
+        none_ls.builtins.diagnostics.typos,
       }
     })
 

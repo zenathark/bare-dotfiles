@@ -9,6 +9,9 @@ return {
     "hrsh7th/cmp-path"
   },
   {
+    "f3fora/cmp-spell",
+  },
+  {
     'L3MON4D3/LuaSnip',
     dependencies = {
       'saadparwaiz1/cmp_luasnip',
@@ -82,6 +85,15 @@ return {
           },
           { name = 'luasnip' },
           { name = 'buffer' },
+          {
+            name = 'spell',
+            option = {
+              keep_all_entries = false,
+              enable_in_context = function()
+                return true
+              end,
+            }
+          }
         }),
         formatting = {
           fields = { "menu", "abbr", "kind" },
