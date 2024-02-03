@@ -44,7 +44,7 @@ return {
         end,
       })
       lspconfig.rust_analyzer.setup({
-        capabilites = capabilities,
+        capabilities = capabilities,
         settings = {
           ['rust-analyzer'] = {},
         },
@@ -53,11 +53,29 @@ return {
         end
       })
       lspconfig.tsserver.setup({
-        capabilites = capabilities,
+        capabilities = capabilities,
         on_attach = function(client, bufnr)
           navic.attach(client, bufnr)
         end
       })
+      lspconfig.bashls.setup({
+        capabilities = capabilities,
+        on_attach = function(client, bufnr)
+          navic.attach(client, bufnr)
+        end
+      })
+      lspconfig.anakin_language_server.setup({
+        capabilities = capabilities,
+        on_attach = function(client, bufnr)
+          navic.attach(client, bufnr)
+        end
+      })
+      -- lspconfig.pyright.setup({
+      --   capabilities = capabilities,
+      --   on_attach = function(client, bufnr)
+      --     navic.attach(client, bufnr)
+      --   end
+      -- })
       local opts = {}
       vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
       vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
