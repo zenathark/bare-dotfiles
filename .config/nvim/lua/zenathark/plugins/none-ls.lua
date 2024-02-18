@@ -19,7 +19,14 @@ return {
         none_ls.builtins.diagnostics.pylama,
         none_ls.builtins.diagnostics.eslint_d,
         none_ls.builtins.diagnostics.clang_check,
-        none_ls.builtins.diagnostics.cppcheck,
+        none_ls.builtins.diagnostics.cppcheck.with({
+          args = {
+            "--enable=warning,style,performance,portability",
+            "--template=gcc",
+            "--language=c++",
+            "$FILENAME",
+          },
+        }),
         none_ls.builtins.diagnostics.cpplint,
         none_ls.builtins.diagnostics.typos,
       }
