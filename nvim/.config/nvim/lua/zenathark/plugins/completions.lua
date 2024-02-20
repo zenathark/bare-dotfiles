@@ -1,17 +1,5 @@
 return {
   {
-    "hrsh7th/cmp-nvim-lsp"
-  },
-  {
-    "hrsh7th/cmp-buffer"
-  },
-  {
-    "hrsh7th/cmp-path"
-  },
-  {
-    "f3fora/cmp-spell",
-  },
-  {
     'L3MON4D3/LuaSnip',
     dependencies = {
       'saadparwaiz1/cmp_luasnip',
@@ -20,19 +8,20 @@ return {
   },
   {
     "hrsh7th/nvim-cmp",
-    config = function()
-      local cmp = require('cmp')
-      local luasnip = require('luasnip')
-      require("luasnip.loaders.from_vscode").lazy_load()
-      cmp.setup({
-        snippet = {
-          expand = function(args)
-            luasnip.lsp_expand(args.body) -- For `luasnip` users.
-          end,
-        },
-        window = {
-          completion = cmp.config.window.bordered(),
-          documentation = cmp.config.window.bordered(),
+    version = false,
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+      "f3fora/cmp-spell",
+    },
+    opts = function()
+      vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+      local cmp = require("cmp")
+      local defaults = require("cmp.config.default")()
+      return {
+        completion = {
+          completeopt = "menu,menuone,noinsert",
         },
         mapping = cmp.mapping.preset.insert({
           ["<C-p>"] = cmp.mapping.select_prev_item(),
@@ -67,48 +56,42 @@ return {
             end
             fallback() -- if not exited early, always fallback
           end),
-          ["<C-b>"] = cmp.mapping(function(fallback)
-            if luasnip.jumpable(-1) then
-              luasnip.jump(-1)
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
         }),
         sources = cmp.config.sources({
-          { name = 'path' },
-          {
-            name = 'nvim_lsp',
-            entry_filter = function(entry)
-              return cmp.lsp.CompletionItemKind.Snippet ~= entry:get_kind()
-            end,
+          { name = "nvim_lsp" },
+          { name = "path" },
+        }, {
+            { name = "buffer" },
+          }),
+        experimental = {
+          ghost_text = {
+            hl_group = "CmpGhostText",
           },
-          { name = 'luasnip' },
-          { name = 'buffer' },
-          {
-            name = 'spell',
-            option = {
-              keep_all_entries = false,
-              enable_in_context = function()
-                return true
-              end,
-            }
-          }
-        }),
-        formatting = {
-          fields = { "menu", "abbr", "kind" },
-          format = function(entry, item)
-            local menu_icon = {
-              nvim_lsp = "λ",
-              luasnip = "⋗",
-              buffer = "Ω",
-              path = "🖫",
-            }
-            item.menu = menu_icon[entry.source.name]
-            return item
-          end,
         },
-      })
-    end
+        sorting = defaults.sorting,
+      }
+    end,
+    config = function(_, opts)
+      for _, source in ipairs(opts.sources) do
+        source.group_index = source.group_index or 1
+      end
+      require("cmp").setup(opts)
+    end,
+    -- config = function()
+    --     formatting = {
+    --       fields = { "menu", "abbr", "kind" },
+    --       format = function(entry, item)
+    --         local menu_icon = {
+    --           nvim_lsp = "λ",
+    --           luasnip = "⋗",
+    --           buffer = "Ω",
+    --           path = "🖫",
+    --         }
+    --         item.menu = menu_icon[entry.source.name]
+    --         return item
+    --       end,
+    --     },
+    --   })
+    -- end
   },
 }
